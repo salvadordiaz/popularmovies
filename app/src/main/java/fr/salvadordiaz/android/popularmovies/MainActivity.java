@@ -9,8 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.*;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -35,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         moviePosterAdapter = new MoviePosterAdapter();
         postersRecyclerView = findViewById(R.id.rv_posters);
-        postersRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        postersRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         postersRecyclerView.setHasFixedSize(true);
         postersRecyclerView.setAdapter(moviePosterAdapter);
         findPopularMovies();

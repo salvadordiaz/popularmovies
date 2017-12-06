@@ -5,9 +5,11 @@ package fr.salvadordiaz.android.popularmovies;
 
 import java.util.List;
 
+import com.squareup.picasso.Picasso;
+
 import android.support.v7.widget.RecyclerView;
 import android.view.*;
-import android.widget.TextView;
+import android.widget.ImageView;
 import fr.salvadordiaz.android.popularmovies.tmdb.Movie;
 
 public class MoviePosterAdapter extends RecyclerView.Adapter<MoviePosterAdapter.MoviePosterViewHolder> {
@@ -23,7 +25,13 @@ public class MoviePosterAdapter extends RecyclerView.Adapter<MoviePosterAdapter.
 
     @Override
     public void onBindViewHolder(MoviePosterViewHolder holder, int position) {
-        holder.movieTextView.setText(movies.get(position).title);
+        holder.posterView.setImageResource(android.R.color.transparent);
+        Picasso.with(holder.posterView.getContext())
+                        .load(movies.get(position).getPosterUrl())
+                        .placeholder(android.R.color.transparent)
+                        .error(android.R.drawable.stat_notify_error)
+                        .fit()
+                        .into(holder.posterView);
     }
 
     @Override
@@ -38,11 +46,11 @@ public class MoviePosterAdapter extends RecyclerView.Adapter<MoviePosterAdapter.
 
     static class MoviePosterViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView movieTextView;
+        private final ImageView posterView;
 
         private MoviePosterViewHolder(View itemView) {
             super(itemView);
-            movieTextView = itemView.findViewById(R.id.tv_poster_url);
+            posterView = itemView.findViewById(R.id.iv_poster);
         }
     }
 

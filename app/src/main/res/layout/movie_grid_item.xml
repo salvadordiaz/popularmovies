@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:layout_width="match_parent"
+              android:layout_width="wrap_content"
               android:layout_height="wrap_content">
 
-  <TextView
-      android:id="@+id/tv_poster_url"
-      android:textSize="22sp"
-      android:padding="16dp"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"/>
+  <ImageView
+      android:id="@+id/iv_poster"
+      android:layout_width="140dp"
+      android:layout_height="208dp"
+      android:layout_gravity="center"
+      android:contentDescription="@string/iv_poster_description"/>
 
-  <View
-      android:layout_width="match_parent"
-      android:layout_height="1dp"
-      android:layout_marginLeft="8dp"
-      android:background="#dadada"
-      android:layout_marginRight="8dp"/>
 </LinearLayout>
