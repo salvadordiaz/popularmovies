@@ -9,24 +9,40 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import fr.salvadordiaz.android.popularmovies.tmdb.DiscoverQueryResult;
-import fr.salvadordiaz.android.popularmovies.tmdb.Movie;
 import okhttp3.*;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView posterUrlsTextView;
+    private TextView errorTextView;
+    private ProgressBar loadingIndicator;
+    private RecyclerView postersRecyclerView;
+    private MoviePosterAdapter moviePosterAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        posterUrlsTextView = findViewById(R.id.tv_poster_urls);
+
+        errorTextView = findViewById(R.id.tv_error_message);
+        loadingIndicator = findViewById(R.id.pb_loading_indicator);
+
+        moviePosterAdapter = new MoviePosterAdapter();
+        postersRecyclerView = findViewById(R.id.rv_posters);
+        postersRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        postersRecyclerView.setHasFixedSize(true);
+        postersRecyclerView.setAdapter(moviePosterAdapter);
         findPopularMovies();
     }
 
     private void findPopularMovies() {
+        showError(View.INVISIBLE, View.VISIBLE);
         Uri url = new Uri.Builder()
                         .scheme("https")
                         .path("api.themoviedb.org/3/discover/movie")
@@ -36,7 +52,19 @@ public class MainActivity extends AppCompatActivity {
         new MovieDbAsyncTask().execute(url);
     }
 
+    private void showError(int errorVisibility, int dataVisibility) {
+        errorTextView.setVisibility(errorVisibility);
+        postersRecyclerView.setVisibility(dataVisibility);
+    }
+
     private class MovieDbAsyncTask extends AsyncTask<Uri, Void, DiscoverQueryResult> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loadingIndicator.setVisibility(View.VISIBLE);
+        }
+
         @Override
         protected DiscoverQueryResult doInBackground(Uri... urls) {
             try {
@@ -45,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                                 .execute().body();
                 return body != null ? parseData(body.string()) : null;
             } catch (Exception e) {
+                Log.e(MainActivity.class.getName(), getString(R.string.error_message), e);
                 return null;
             }
         }
@@ -57,12 +86,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(DiscoverQueryResult s) {
+            loadingIndicator.setVisibility(View.INVISIBLE);
             if (s != null) {
-                for (Movie result : s.results) {
-                    posterUrlsTextView.append(result.original_title + "\n\n\n");
-                }
+                showError(View.INVISIBLE, View.VISIBLE);
+                moviePosterAdapter.setMovies(s.results);
             } else {
-                posterUrlsTextView.setText(getString(R.string.find_movies_error));
+                showError(View.VISIBLE, View.INVISIBLE);
             }
         }
     }

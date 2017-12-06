@@ -1,4 +1,4 @@
 <resources>
   <string name="app_name">PopularMovies</string>
-  <string name="find_movies_error">Failed to retrieve popular movies.</string>
+  <string name="error_message">An error has occurred while loading movie data. Please try again later.</string>
 </resources>
