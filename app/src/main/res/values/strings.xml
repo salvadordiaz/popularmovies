@@ -2,4 +2,9 @@
   <string name="app_name">PopularMovies</string>
   <string name="error_message">An error has occurred while loading movie data. Please try again later.</string>
   <string name="iv_poster_description">Movie poster</string>
+  <string name="sort_menu">Sort by…</string>
+  <string-array name="sort_options">
+    <item>Sort by popularity</item>
+    <item>Sort by rating</item>
+  </string-array>
 </resources>

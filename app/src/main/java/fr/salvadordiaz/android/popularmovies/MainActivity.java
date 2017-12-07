@@ -9,15 +9,18 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.*;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.view.*;
+import android.widget.*;
 import fr.salvadordiaz.android.popularmovies.tmdb.DiscoverQueryResult;
 import okhttp3.*;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+
+    private static final String popularSegment = "popular";
+    private static final String ratingSegment = "top_rated";
 
     private TextView errorTextView;
     private ProgressBar loadingIndicator;
@@ -37,23 +40,43 @@ public class MainActivity extends AppCompatActivity {
         postersRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         postersRecyclerView.setHasFixedSize(true);
         postersRecyclerView.setAdapter(moviePosterAdapter);
-        findPopularMovies();
     }
 
-    private void findPopularMovies() {
+    private void findMovies(String sortSelection) {
         showError(View.INVISIBLE, View.VISIBLE);
-        Uri url = new Uri.Builder()
+        new MovieDbAsyncTask().execute(new Uri.Builder()
                         .scheme("https")
-                        .path("api.themoviedb.org/3/discover/movie")
+                        .path("api.themoviedb.org/3/movie/")
+                        .appendPath(sortSelection)
                         .appendQueryParameter("api_key", BuildConfig.API_KEY)
-                        .appendQueryParameter("sort_by", "popularity.desc")
-                        .build();
-        new MovieDbAsyncTask().execute(url);
+                        .build());
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+        findMovies(position == 0 ? popularSegment : ratingSegment);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
     }
 
     private void showError(int errorVisibility, int dataVisibility) {
         errorTextView.setVisibility(errorVisibility);
         postersRecyclerView.setVisibility(dataVisibility);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.sort_menu, menu);
+        MenuItem item = menu.findItem(R.id.sort_spinner);
+        Spinner spinner = (Spinner) item.getActionView();
+        ArrayAdapter<CharSequence> sortMenuArrayAdapter = ArrayAdapter.createFromResource(
+                        this, R.array.sort_options, android.R.layout.simple_spinner_item);
+        sortMenuArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(sortMenuArrayAdapter);
+        spinner.setOnItemSelectedListener(this);
+        return true;
     }
 
     private class MovieDbAsyncTask extends AsyncTask<Uri, Void, DiscoverQueryResult> {
