@@ -7,4 +7,7 @@
     <item>Sort by popularity</item>
     <item>Sort by rating</item>
   </string-array>
+  <string name="movie_extra">movie_extra</string>
+  <string name="title_activity_movie_detail">MovieDetailActivity</string>
+  <string name="movie_release">Released on %s</string>
 </resources>

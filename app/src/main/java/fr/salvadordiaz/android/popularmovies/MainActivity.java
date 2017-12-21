@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,9 +16,12 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import fr.salvadordiaz.android.popularmovies.tmdb.DiscoverQueryResult;
+import fr.salvadordiaz.android.popularmovies.tmdb.Movie;
 import okhttp3.*;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class MainActivity
+                extends AppCompatActivity
+                implements AdapterView.OnItemSelectedListener, MoviePosterAdapter.MovieClickListener {
 
     private static final String popularSegment = "popular";
     private static final String ratingSegment = "top_rated";
@@ -28,6 +32,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private MoviePosterAdapter moviePosterAdapter;
 
     @Override
+    public void onClick(Movie movie) {
+        startActivity(new Intent(this, MovieDetailActivity.class)
+                        .putExtra(getString(R.string.movie_extra), movie));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -35,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         errorTextView = findViewById(R.id.tv_error_message);
         loadingIndicator = findViewById(R.id.pb_loading_indicator);
 
-        moviePosterAdapter = new MoviePosterAdapter();
+        moviePosterAdapter = new MoviePosterAdapter(this);
         postersRecyclerView = findViewById(R.id.rv_posters);
         postersRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         postersRecyclerView.setHasFixedSize(true);
